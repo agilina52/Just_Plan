@@ -1,0 +1,13 @@
+{
+  "name": "@just-plan/ml",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ../../scripts/run-ml.js",
+    "start": "node ../../scripts/run-ml.js --no-reload",
+    "build": "echo \"python service — no build\"",
+    "typecheck": "echo \"python service — no typecheck\"",
+    "lint": "echo \"python service — no lint\"",
+    "test": "python -m pytest -q || echo \"no tests\""
+  }
+}

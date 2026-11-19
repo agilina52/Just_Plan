@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  projects      Project[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id           String          @id @default(cuid())
+  ownerId      String
+  name         String
+  thumbnailUrl String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  owner        User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  revisions    PlanRevision[]
+  assets       ProjectAsset[]
+  jobs         Job[]
+  messages     ChatMessage[]
+}
+
+model PlanRevision {
+  id        String   @id @default(cuid())
+  projectId String
+  version   Int
+  document  String
+  source    String   @default("manual")
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, version])
+  @@index([projectId])
+}
+
+model ProjectAsset {
+  id        String   @id @default(cuid())
+  projectId String
+  kind      String
+  key       String
+  mimeType  String
+  size      Int
+  url       String
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Job {
+  id        String   @id @default(cuid())
+  projectId String
+  type      String
+  status    String   @default("queued")
+  progress  Int      @default(0)
+  payload   String   @default("{}")
+  result    String?
+  error     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  role      String
+  content   String
+  meta      String   @default("{}")
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}

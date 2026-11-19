@@ -1,0 +1,13 @@
+// Production Postgres schema (swap datasource when deploying).
+// Copy provider/url into schema.prisma or use prisma multi-schema workflow.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models are identical to schema.prisma — keep in sync when evolving.

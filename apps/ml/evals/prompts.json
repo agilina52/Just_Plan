@@ -1,0 +1,22 @@
+[
+  {
+    "id": "open-space",
+    "prompt": "убери стену для open-space",
+    "expectTools": ["remove_entity"]
+  },
+  {
+    "id": "kitchen-label",
+    "prompt": "пометь первую комнату как кухня",
+    "expectTools": ["set_room_label"]
+  },
+  {
+    "id": "add-door",
+    "prompt": "добавь дверь",
+    "expectTools": ["add_opening"]
+  },
+  {
+    "id": "add-wall",
+    "prompt": "добавь внутреннюю стену",
+    "expectTools": ["add_wall"]
+  }
+]

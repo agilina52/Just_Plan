@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlanDocument",
+  "type": "object",
+  "required": ["units", "scale", "walls", "openings", "rooms", "furniture", "meta"],
+  "properties": {
+    "units": { "type": "string", "enum": ["mm", "cm", "m"] },
+    "scale": {
+      "type": "object",
+      "properties": {
+        "pixelsPerMeter": { "type": ["number", "null"] }
+      }
+    },
+    "walls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "a", "b", "thickness"],
+        "properties": {
+          "id": { "type": "string" },
+          "a": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+          "b": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+          "thickness": { "type": "number" },
+          "kind": { "type": "string", "enum": ["exterior", "interior", "unknown"] }
+        }
+      }
+    },
+    "openings": { "type": "array" },
+    "rooms": { "type": "array" },
+    "furniture": { "type": "array" },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "sourceImageId": { "type": ["string", "null"] },
+        "version": { "type": "integer" }
+      }
+    }
+  }
+}

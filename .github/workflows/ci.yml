@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm install --no-fund --no-audit
+      - run: npm run build -w @just-plan/plan-schema
+      - run: npm run test -w @just-plan/plan-schema
+      - name: Prisma generate
+        working-directory: apps/api
+        env:
+          DATABASE_URL: "file:./ci.db"
+        run: npx prisma generate
+      - run: npm run typecheck -w @just-plan/api
+      - run: npm run typecheck -w @just-plan/web
+      - run: npm run build -w @just-plan/api
+      - name: Install ML deps
+        run: pip install -r apps/ml/requirements.txt
+      - name: Import ML app
+        run: python -c "from app.main import app; print(app.title)"
+        working-directory: apps/ml
