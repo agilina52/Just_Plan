@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function HomePage() {
+  const { status } = useSession();
+  const enterHref = status === "authenticated" ? "/dashboard" : "/login";
+
   return (
     <main className="relative min-h-screen overflow-hidden">
       <div
@@ -12,17 +18,20 @@ export default function HomePage() {
       />
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <p className="font-display text-2xl tracking-tight text-moss">Just Plan</p>
+        <Link href="/" className="font-display text-2xl tracking-tight text-moss">
+          Just Plan
+        </Link>
         <Link
-          href="/login"
+          href={enterHref}
+          prefetch
           className="rounded-full border border-moss/30 bg-white/50 px-4 py-2 text-sm text-ink backdrop-blur transition hover:bg-white"
         >
-          Войти
+          {status === "authenticated" ? "К проектам" : "Войти"}
         </Link>
       </header>
 
       <section className="relative z-10 mx-auto flex min-h-[75vh] w-full max-w-6xl flex-col justify-center px-6 pb-20 pt-8">
-        <p className="font-display text-5xl leading-[0.95] tracking-tight text-ink md:text-7xl md:max-w-3xl">
+        <p className="font-display text-5xl leading-[0.95] tracking-tight text-ink md:max-w-3xl md:text-7xl">
           Just Plan
         </p>
         <h1 className="mt-6 max-w-xl text-lg text-ink/80 md:text-xl">
@@ -31,17 +40,21 @@ export default function HomePage() {
         </h1>
         <div className="mt-10 flex flex-wrap gap-3">
           <Link
-            href="/login"
+            href={enterHref}
+            prefetch
             className="rounded-full bg-moss px-6 py-3 text-sm font-medium text-paper transition hover:bg-moss/90"
           >
             Начать работу
           </Link>
-          <a
-            href="#how"
+          <button
+            type="button"
+            onClick={() =>
+              document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })
+            }
             className="rounded-full border border-ink/15 bg-white/40 px-6 py-3 text-sm text-ink/80 backdrop-blur"
           >
             Как это работает
-          </a>
+          </button>
         </div>
       </section>
 

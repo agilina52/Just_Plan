@@ -1,24 +1,19 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { api, type Project } from "@/lib/api";
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
   const token = session?.apiToken;
-
-  useEffect(() => {
-    if (status === "unauthenticated") router.replace("/login");
-  }, [status, router]);
 
   useEffect(() => {
     if (!token) return;
@@ -42,30 +37,17 @@ export default function DashboardPage() {
     }
   }
 
-  if (status === "loading" || !session) {
+  if (!session) {
     return <main className="p-8 text-ink/60">Загрузка…</main>;
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-5xl px-6 py-10">
-      <header className="flex items-center justify-between gap-4">
-        <div>
-          <Link href="/" className="font-display text-2xl text-moss">
-            Just Plan
-          </Link>
-          <p className="mt-1 text-sm text-ink/60">{session.user?.email}</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="text-sm text-ink/60 underline-offset-2 hover:underline"
-        >
-          Выйти
-        </button>
-      </header>
-
-      <section className="mt-12">
+    <main className="mx-auto w-full max-w-5xl px-6 py-10">
+      <section>
         <h1 className="font-display text-4xl text-ink">Проекты</h1>
+        <p className="mt-2 text-sm text-ink/60">
+          Создайте проект и перейдите в рабочую область без перезагрузки страницы.
+        </p>
         <form onSubmit={onCreate} className="mt-6 flex flex-wrap gap-3">
           <input
             value={name}
@@ -94,6 +76,7 @@ export default function DashboardPage() {
               <li key={p.id}>
                 <Link
                   href={`/projects/${p.id}`}
+                  prefetch
                   className="flex items-center justify-between py-4 transition hover:bg-white/40"
                 >
                   <span className="font-medium text-ink">{p.name}</span>

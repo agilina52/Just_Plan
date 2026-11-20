@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PlanDocument } from "@just-plan/plan-schema";
 import { emptyPlan } from "@just-plan/plan-schema";
@@ -13,8 +13,7 @@ import { ChatPanel, type ChatItem } from "@/components/chat-panel";
 export default function ProjectWorkspacePage() {
   const params = useParams<{ id: string }>();
   const projectId = params.id;
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession();
   const token = session?.apiToken;
 
   const [name, setName] = useState("Проект");
@@ -27,10 +26,6 @@ export default function ProjectWorkspacePage() {
   const [dirty, setDirty] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (status === "unauthenticated") router.replace("/login");
-  }, [status, router]);
 
   const reload = useCallback(async () => {
     if (!token) return;
@@ -123,14 +118,18 @@ export default function ProjectWorkspacePage() {
     }
   }
 
-  if (status === "loading" || !session) {
+  if (!session) {
     return <main className="p-8 text-ink/60">Загрузка workspace…</main>;
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-[100dvh] flex-col">
       <header className="flex items-center gap-3 border-b border-moss/15 bg-[#f7f2e8]/90 px-4 py-3 backdrop-blur">
-        <Link href="/dashboard" className="text-sm text-moss hover:underline">
+        <Link
+          href="/dashboard"
+          prefetch
+          className="text-sm text-moss hover:underline"
+        >
           ← Проекты
         </Link>
         <h1 className="font-display text-xl text-ink">{name}</h1>
